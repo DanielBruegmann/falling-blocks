@@ -4,11 +4,13 @@ import Graphics.Rendering.OpenGL
 import Graphics.UI.GLUT
 import Graphics.UI.GLUT.Objects
 import Data.IORef
+import Criterion.Measurement
  
 import Cube
 import Points
+import Simulation
  
-display angle position = do 
+display angle position= do 
   clear [ColorBuffer,DepthBuffer]
   loadIdentity
   (x,y,z) <- get position
@@ -27,8 +29,16 @@ display angle position = do
   flush
   --swapBuffers
  
-idle angle delta = do
-  a <- get angle
-  d <- get delta
-  angle $=! (a + d) -- The parens are necessary due to a precedence bug in StateVar
-  postRedisplay Nothing -- Only required on Mac OS X, which double-buffers internally
+idle angle delta lastSimUpdateRef skippedFramesRef = do
+  lastSimUpdate <- get lastSimUpdateRef
+  now <- getTime
+  let diff = now - lastSimUpdate
+  skippedFrames <- get skippedFramesRef
+  if (diff > 0.040 && skippedFrames < 5)  -- 25 Updates / Second
+    then do
+      skippedFramesRef $= skippedFrames + 1
+      updateSimulation angle delta
+      lastSimUpdateRef $= now
+    else do
+      skippedFramesRef $= 0
+      postRedisplay Nothing -- Only required on Mac OS X, which double-buffers internally

@@ -1,6 +1,7 @@
 import Graphics.Rendering.OpenGL
 import Graphics.UI.GLUT
 import Data.IORef
+import Criterion.Measurement
  
 import Bindings
  
@@ -18,13 +19,16 @@ main = do
   angle <- newIORef (0.0::GLfloat)
   rotSpeed <- newIORef (0.01::GLfloat)
   camPos <- newIORef (0.0::GLfloat, 0.0, -2.0)
+  a <- getTime
+  lastSimUpdate <- newIORef (a)
+  skippedFrames <- newIORef (0::Int)
   --camView <- newIORef (0.0::GLfloat, 0.0, 1.0)
   --camViewNorth <- newIORef (0.0::GLfloat, 1.0, 0.0) -- wo ist oben?
   --mousePos <- newIORef (False, 0::GLint,0) -- ist Maus geklickt? letzte Koordinaten
   keyboardCallback $= Just (keyboardHandler rotSpeed)
   specialCallback $= Just (specialHandler camPos)
   --motionCallback $= Just (motionHandler camView camViewNorth mousePos)
-  idleCallback $= Just (idle angle rotSpeed)
+  idleCallback $= Just (idle angle rotSpeed lastSimUpdate skippedFrames)
   displayCallback $= (display angle camPos)
 
   matrixMode $= Projection 
@@ -36,5 +40,4 @@ main = do
   frustum (-right) right (-top) top near far
   matrixMode $= Modelview 0
 
-  
   mainLoop

@@ -1,4 +1,4 @@
-module Cube where
+module Graphics.Cube where
  
 import Graphics.Rendering.OpenGL
 import Graphics.UI.GLUT

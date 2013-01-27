@@ -1,4 +1,4 @@
-module Display (display,idle) where
+module Graphics.Display (display,idle) where
  
 import Graphics.Rendering.OpenGL
 import Graphics.UI.GLUT
@@ -6,9 +6,10 @@ import Graphics.UI.GLUT.Objects
 import Data.IORef
 import Criterion.Measurement
  
-import Cube
-import Points
+import Graphics.Cube
+import Graphics.Points
 import Simulation
+import Scene 
  
 display angle position= do 
   clear [ColorBuffer,DepthBuffer]
@@ -29,7 +30,8 @@ display angle position= do
   flush
   --swapBuffers
  
-idle angle delta lastSimUpdateRef skippedFramesRef = do
+idle scene angle delta lastSimUpdateRef skippedFramesRef = do
+  printScene scene
   lastSimUpdate <- get lastSimUpdateRef
   now <- getTime
   let diff = now - lastSimUpdate
@@ -37,7 +39,7 @@ idle angle delta lastSimUpdateRef skippedFramesRef = do
   if (diff > 0.040 && skippedFrames < 5)  -- 25 Updates / Second
     then do
       skippedFramesRef $= skippedFrames + 1
-      updateSimulation angle delta
+      updateSimulation scene angle delta
       lastSimUpdateRef $= now
     else do
       skippedFramesRef $= 0

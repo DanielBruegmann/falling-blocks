@@ -1,5 +1,5 @@
 {-# LANGUAGE TupleSections #-}
-module Sphere where
+module Object where
 
 import Numeric.LinearAlgebra
 import Control.Applicative((<$>))
@@ -10,17 +10,13 @@ import Data.List(tails,minimumBy)
 import Data.Maybe(listToMaybe,maybeToList)
 import Data.Function(on)
 
+import Scene
 
-type R3 = Vector Double -- length in type?
+vec :: Double -> Vector Double
+vec x = fromList [x]
 
-data Object = Object { 
-  x :: R3,
-  v :: R3,
-  content :: Type
-} deriving Show
-
-data Type = Sphere Double |
-            Plane R3 deriving Show
+moveObject :: IORef Object -> Double -> IO ()
+moveObject objectRef timestep = modifyIORef objectRef (\object -> object{x=(vec timestep) * (v object) + (x object)})
 
 whenCollision :: Object -> Object -> Maybe Double
 -- TODO v1 == v2

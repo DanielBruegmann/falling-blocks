@@ -1,9 +1,9 @@
-module Bindings (idle,display,reshape,keyboardHandler, specialHandler) where
+module Graphics.Bindings (idle,display,reshape,keyboardHandler, specialHandler) where
 
 import Graphics.Rendering.OpenGL
 import Graphics.UI.GLUT
  
-import Display
+import Graphics.Display
  
 reshape s@(Size w h) = do 
   viewport $= (Position 0 0, s)

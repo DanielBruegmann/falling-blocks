@@ -1,4 +1,4 @@
-module Points where
+module Graphics.Points where
  
 import Graphics.Rendering.OpenGL
  

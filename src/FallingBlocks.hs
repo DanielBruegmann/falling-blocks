@@ -3,7 +3,9 @@ import Graphics.UI.GLUT
 import Data.IORef
 import Criterion.Measurement
  
-import Bindings
+import Graphics.Bindings
+import Object
+import Scene
  
 main = do
   (progname,_) <- getArgsAndInitialize
@@ -12,6 +14,9 @@ main = do
   createWindow "Hello World"
   --windowSize $= Size 500 500
   reshapeCallback $= Just reshape
+  
+  scene <- createScene
+
   lighting $= Enabled
   position (Light 0) $= Vertex4 3 0 0  1
   light (Light 0) $= Enabled
@@ -28,7 +33,7 @@ main = do
   keyboardCallback $= Just (keyboardHandler rotSpeed)
   specialCallback $= Just (specialHandler camPos)
   --motionCallback $= Just (motionHandler camView camViewNorth mousePos)
-  idleCallback $= Just (idle angle rotSpeed lastSimUpdate skippedFrames)
+  idleCallback $= Just (idle scene angle rotSpeed lastSimUpdate skippedFrames)
   displayCallback $= (display angle camPos)
 
   matrixMode $= Projection 

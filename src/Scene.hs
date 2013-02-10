@@ -29,8 +29,8 @@ createObject (x1, x2, x3) (v1, v2, v3) myContent = Object{x=myX, v=myV, content=
 createScene :: IO [IORef Object]
 createScene = sequence [newIORef o1, newIORef o2]
   where
-    o1 = createObject (0,0,0) (0,0,0) (Sphere 0.7)
-    o2 = createObject (1,0,0) (0,0,0) (Sphere 0.4)
+    o1 = createObject (0,0,0) (-0.05,-0.02,0) (Sphere 0.7)
+    o2 = createObject (1,0,0) (0,0.05,0.05) (Sphere 0.4)
 {-
 convertToObject :: String -> IO (IORef Object)
 convertToObject line = do

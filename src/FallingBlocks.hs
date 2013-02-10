@@ -34,7 +34,7 @@ main = do
   specialCallback $= Just (specialHandler camPos)
   --motionCallback $= Just (motionHandler camView camViewNorth mousePos)
   idleCallback $= Just (idle scene angle rotSpeed lastSimUpdate skippedFrames)
-  displayCallback $= (display angle camPos)
+  displayCallback $= (display angle camPos scene)
 
   matrixMode $= Projection 
   loadIdentity

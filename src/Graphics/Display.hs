@@ -39,7 +39,7 @@ drawObject object = preservingMatrix $ do
   translate $ vectorToVector3 $ x object
   drawContent $ content object
 
-drawContent (Scene.Sphere r) = renderObject Solid $ Sphere' (CDouble r) 100 100
+drawContent (Scene.Sphere r _) = renderObject Solid $ Sphere' (CDouble r) 100 100
 
 
 idle scene angle delta lastSimUpdateRef skippedFramesRef = do

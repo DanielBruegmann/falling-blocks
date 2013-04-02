@@ -14,8 +14,12 @@ data Object = Object {
   content :: Type
 } deriving Show
 
-data Type = Sphere Double |
+data Type = Sphere Double Double |
             Plane R3 deriving Show
+
+m :: Type -> Double 
+m (Sphere _ mass) = mass
+m (Plane _) = error "m (Plane _)"
 
 printScene :: [IORef Object] -> IO ()
 printScene scene = mapM_ (\ref -> print =<< readIORef ref) scene
@@ -29,8 +33,9 @@ createObject (x1, x2, x3) (v1, v2, v3) myContent = Object{x=myX, v=myV, content=
 createScene :: IO [IORef Object]
 createScene = sequence [newIORef o1, newIORef o2]
   where
-    o1 = createObject (0,0,0) (-0.05,-0.02,0) (Sphere 0.7)
-    o2 = createObject (1,0,0) (0,0.05,0.05) (Sphere 0.4)
+    o1 = createObject (0,0,0) (0.01,-0.01,0) (Sphere 0.1 1.0)
+    o2 = createObject (1,0,0) (0.00,-0.01,0) (Sphere 0.2 4.0)
+
 {-
 convertToObject :: String -> IO (IORef Object)
 convertToObject line = do

@@ -20,7 +20,7 @@ moveObject objectRef timestep = modifyIORef objectRef (\object -> object{x=(vec 
 
 whenCollision :: Object -> Object -> Maybe Double
 -- TODO v1 == v2
-whenCollision (Object x1 v1 (Sphere r1)) (Object x2 v2 (Sphere r2)) = if disc >= 0 then
+whenCollision (Object x1 v1 (Sphere r1 _)) (Object x2 v2 (Sphere r2 _)) = if disc >= 0 then
       listToMaybe $ filter (>=0) [t_minus, t_plus]
     else 
       Nothing
@@ -33,13 +33,26 @@ whenCollision (Object x1 v1 (Sphere r1)) (Object x2 v2 (Sphere r2)) = if disc >=
     dx = x1 - x2
     dv = v1 - v2 
 
-whenCollision so@(Object _ _ (Sphere _)) po@(Object _ _ (Plane _)) = whenCollisionSpherePlane so po
-whenCollision po@(Object _ _ (Plane _)) so@(Object _ _ (Sphere _)) = whenCollisionSpherePlane so po
+whenCollision so@(Object _ _ (Sphere _ _)) po@(Object _ _ (Plane _)) = whenCollisionSpherePlane so po
+whenCollision po@(Object _ _ (Plane _)) so@(Object _ _ (Sphere _ _)) = whenCollisionSpherePlane so po
 whenCollision (Object _ _ (Plane _)) (Object _ _ (Plane _)) = Nothing -- Planes do not collide
 
-whenCollisionSpherePlane (Object x1 v1 (Sphere r)) (Object x2 v2 (Plane n)) = error "whenCollisionSpherePlane unimplemented"
+whenCollisionSpherePlane (Object x1 v1 (Sphere r _)) (Object x2 v2 (Plane n)) = error "whenCollisionSpherePlane unimplemented"
 -- get rid of non-exhaustive pattern match and type-check order of arguments
 
+performCollision r1 r2 = do
+  o1 <- readIORef r1
+  o2 <- readIORef r2
+  case (o1,o2) of
+    ((Object _ _ (Sphere _ _)),(Object _ _ (Sphere _ _))) ->
+      let
+        m1 = m (content o1)
+        m2 = m (content o2)
+        v_CenterOfMass =  vec (1/(m1 + m2)) * (vec m1 * v o1 + vec m2 * v o2) 
+      in do
+        writeIORef r1 o1{ v = 2 * v_CenterOfMass - v o1 }
+        writeIORef r2 o2{ v = 2 * v_CenterOfMass - v o2 }
+    (_,_) -> error "performCollision unimplemented"
 
 addCurrentValuesToObjectRefs :: [IORef Object] -> IO [(IORef Object, Object)] 
 addCurrentValuesToObjectRefs = sequence . map (\r -> (r,) <$> readIORef r) 
